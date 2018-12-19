@@ -1,0 +1,139 @@
+#include<iostream>
+#include<math.h>
+using namespace std;
+In case if you require for it. */
+inline double Log_Bin(double a,double b)
+{
+double x=0;
+double accu=0.0001;//The accuracy can be re-written right here.
+double nextx;
+nextx=x+accu;
+if (pow(a,x)>b&&pow(a,nextx)>pow(a,x))
+{
+accu*=-1;
+}
+else accu*=1;
+do
+{
+if(pow(a,x)-b==0) break;
+else x+=accu;
+}while(fabs(pow(a,x)-b)<=0.0001);/*Notice that if the accuracy is re-written,the '0.0001' here
+ should be changed too! The value should be equal to the accuracy measure!*/ 
+return x;
+}
+/* Here I offered an additional function that calculates log(a)(b),
+In case if you require for it.*/
+
+inline double F(double x)
+{
+return 6*x*x;
+//You can cover the function with yours here!
+//e.g. return Log_Bin(3,x), which means log(3)(x),a universal log function.
+//e.g. return log(x)*sin(2/x);
+//Notice that log(const double) is equal to ln(x) in Maths!
+//e.g. return pow(x,5.0), which means x^5.0, a power function.
+//Notice that there's always a ';' at the tail of an expression!
+}
+
+class Parabola//This is a parabola class, where parameters and related functions of which are declared.
+{
+double a,b,c;
+public:
+Parabola(double x,double y,double z)
+{ a=x; b=y; c=z; }
+double f(double x);
+double Integral(double x1,double x2);
+}
+;
+
+inline double Parabola::f(double x)
+{
+return a*pow(x,2)+b*x+c;
+}
+
+inline double Parabola::Integral(double x1,double x2)
+{
+return a/3*pow(x2,3)+b/2*pow(x2,2)+c*x2-(a/3*pow(x1,3)+b/2*pow(x1,2)+c*x1);
+}
+
+int main ()
+{
+    while(1)
+    {
+    	double start,end;
+    	double sum=0;
+    	double initx,endx;
+    	double stableinitx,stableendx;
+    	double x[3],y[3];
+    	double u,v,w;
+    	double accu;
+int choice;
+    	cout<<"\nInitial x-->";
+    	cin>>initx;
+    	stableinitx=initx;
+    	cout<<"Terminal x-->";
+    	cin>>endx;
+    	stableendx=endx;
+while(1)
+{
+    	cout<<"Accuracy measure-->";
+    	cin>>accu;
+if(accu>fabs(endx-initx)) cout<<"[Invalid value! The accuracy measure must below "<<fabs(endx-initx)<<"!]\n";
+else break;
+}
+while(1)
+{
+    	cout<<"Run real-time progress examinator?\n[Not recommended for common users.]\n1.Yes\n2.No\nChoose-->";
+cin>>choice;
+if (choice==1||choice==2) break;
+else cout<<"[Sorry, no such option available.]\n";
+}
+    	start=clock();
+    	do
+    	{
+    	x[0]=initx;
+    	for(int i=1;i<3;i++)
+    	x[i]=initx+i*accu;
+    	for(int i=0;i<3;i++)
+    	y[i]=F(x[i]);
+    	v=(y[1]-y[2]-(x[1]*x[1]-x[2]*x[2])*(y[0]-y[1])/(x[0]*x[0]-x[1]*x[1]))/(x[1]-x[2]-(x[1]*x[1]-x[2]*x[2])/(x[0]+x[1]));	u=((x[1]-x[0])*v+y[0]-y[1])/(x[0]*x[0]-x[1]*x[1]);
+            w=y[0]-x[0]*x[0]*u-x[0]*v;
+if(choice==1)
+cout<<"Coefficient: "<<u<<' '<<v<<' '<<w<<endl;
+            Parabola Func(u,v,w);
+    	sum+=Func.Integral(x[0],x[2]);
+    	initx=x[2];
+    	}while(initx<=endx);
+    	end=clock();
+    	double duration=(end-start)/CLOCKS_PER_SEC;
+    	cout<<"Duration: "<<duration<<" secs"<<endl;
+    	cout<<"Result: "<<sum<<endl;
+while(1)
+{
+    	cout<<"Requiring rotary volume?\n1.Yes\n2.No\nChoose-->";
+cin>>choice;
+if (choice==1||choice==2) break;
+else cout<<"[Sorry, no such option available.]\n";
+}
+    	if(choice==1)
+    	{
+        	sum=0;
+        	initx=stableinitx;
+        	endx=stableendx;
+        	do
+        	{
+        	x[0]=initx;
+        	for(int i=1;i<3;i++)
+        	x[i]=initx+i*accu;
+        	for(int i=0;i<3;i++)
+        	y[i]=F(x[i])*F(x[i]);
+        	v=(y[1]-y[2]-(x[1]*x[1]-x[2]*x[2])*(y[0]-y[1])/(x[0]*x[0]-x[1]*x[1]))/(x[1]-x[2]-(x[1]*x[1]-x[2]*x[2])/(x[0]+x[1]));	u=((x[1]-x[0])*v+y[0]-y[1])/(x[0]*x[0]-x[1]*x[1]);
+                w=y[0]-x[0]*x[0]*u-x[0]*v;
+                Parabola Func(u,v,w);
+        	sum+=Func.Integral(x[0],x[2]);
+        	initx=x[2];
+        	}while(initx<=endx);
+        	cout<<"Result: "<<sum<<" "<<endl;
+    	}
+    }
+}
