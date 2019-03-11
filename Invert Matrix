@@ -1,0 +1,155 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+class invertMat
+{
+	double **Mat;
+	int row, col;
+public:
+	invertMat(double **mat, int a, int b)
+	{
+		row = a;
+		col = b*2;
+		Mat = new double *[row];
+		for (int i = 0; i < row; i++)
+			Mat[i] = new double[col];
+		for (int i = 0; i < row; i++)
+			for (int j = 0; j < col; j++)
+				Mat[i][j] = mat[i][j];
+	}
+	void rMultiple(int r1, int r2, double k);
+	void rMultipli(int r,double k);
+	void mExpand();
+	void rExchan(int r1, int r2);
+	void mInvert(double **mat);
+	void dispMat();
+	bool exchForZeroEle(int diaEle);
+	void diaEleEqsOne();
+};
+
+inline void invertMat::mExpand()
+{
+	for(int i=0,j=col/2;i<row;i++,j++)
+		Mat[i][j]=1;
+}
+inline void invertMat::rMultipli(int r,double k)
+{
+	for(int j=0;j<col;j++)
+		Mat[r][j]*=k;
+}
+inline void invertMat::diaEleEqsOne()
+{
+	for(int i=0;i<row;i++)
+		rMultipli(i,1/Mat[i][i]);
+}
+inline void invertMat::rMultiple(int r1, int r2, double k)
+{
+	for (int j = 0; j < col; j++)
+		Mat[r1][j] -= k * Mat[r2][j];
+}
+
+inline void invertMat::rExchan(int r1, int r2)
+{
+	double temp;
+	for (int j = 0; j < col; j++)
+	{
+		temp = Mat[r1][j];
+		Mat[r2][j] = Mat[r1][j];
+		Mat[r1][j] = temp;
+	}
+}
+
+inline bool invertMat::exchForZeroEle(int diaEle)
+{
+	int tempR;
+	for(tempR=diaEle+1;tempR<row;tempR++)
+	{
+		rExchan(tempR,diaEle);
+		if(Mat[diaEle][diaEle]) break;
+	}
+	if(Mat[diaEle][diaEle]) return true;
+	else return false;
+}
+
+inline void invertMat::mInvert(double **mat)
+{
+	double tempCo;
+	int diaEle;
+	bool noZeroDiaEle=true;
+	for (diaEle = 0; diaEle < row - 1; diaEle++)
+	{
+		for (int r = diaEle + 1; r < row; r++)
+		{
+			if(Mat[diaEle][diaEle]==0) noZeroDiaEle=exchForZeroEle(diaEle);
+			if(noZeroDiaEle==true)
+			{
+				tempCo=Mat[r][diaEle]/Mat[diaEle][diaEle];
+				rMultiple(r,diaEle,tempCo);
+			}
+			else break;
+		}//内部循环-行循环
+		if(noZeroDiaEle==false) break;
+	}//外部循环-对角元素循环
+	if(noZeroDiaEle==false) 
+	{
+		cout<<"该矩阵不可逆！"<<endl;
+		mat=new double*[row];
+		for(int i=0;i<row;i++)
+			mat[i]=new double [col/2];
+		for(int i=0;i<row;i++)
+			for(int j=0;j<col/2;j++)
+				mat[i][j]=Mat[i][j];
+	}
+	else
+	{
+		for(diaEle=row-1;diaEle>0;diaEle--)
+			for(int r=diaEle-1;r>=0;r--)
+			{
+				tempCo=Mat[r][diaEle]/Mat[diaEle][diaEle];
+				rMultiple(r,diaEle,tempCo);
+			}//内部循环-行循环
+			diaEleEqsOne();
+			mat=new double*[row];
+			for(int i=0;i<row;i++)
+				mat[i]=new double [col/2];
+			for(int i=0;i<row;i++)
+				for(int j=0;j<col/2;j++)
+					mat[i][j]=Mat[i][j+col/2];
+	}
+}
+
+inline void invertMat::dispMat()
+{
+	cout<<"运算结果："<<endl;
+	for(int i=0;i<row;i++)
+	{
+		for(int j=0;j<col;j++)
+			cout<<'\t'<<Mat[i][j];
+		cout<<endl;
+	}
+}
+
+int main ()
+{
+	double **inputMat;
+	int rMat,cMat;
+	double **resMat=NULL;
+	cout<<"请输入矩阵行数和矩阵列数：";
+	cin>>rMat>>cMat;
+	inputMat=new double*[rMat];
+	for(int i=0;i<rMat;i++)
+		inputMat[i]=new double[cMat*2];
+	for(int i=0;i<rMat;i++)
+		for(int j=0;j<cMat;j++)
+		{
+			cout<<"第"<<i+1<<"行"<<j+1<<"列的元素值：";
+			cin>>inputMat[i][j];
+		}
+		for(int i=0;i<rMat;i++)
+			for(int j=cMat;j<cMat*2;j++)
+				inputMat[i][j]=0;
+		invertMat MatA(inputMat,rMat,cMat);
+		MatA.mExpand();
+		MatA.mInvert(resMat);
+		MatA.dispMat();
+}
