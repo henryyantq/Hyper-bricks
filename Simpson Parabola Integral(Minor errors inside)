@@ -1,25 +1,27 @@
 #include<iostream>
 #include<math.h>
 using namespace std;
-In case if you require for it. */
+
+/* Here I offered an additional function that calculates log(a)(b),
+In case if you require for it.*/
 inline double Log_Bin(double a,double b)
 {
-double x=0;
-double accu=0.0001;//The accuracy can be re-written right here.
-double nextx;
-nextx=x+accu;
-if (pow(a,x)>b&&pow(a,nextx)>pow(a,x))
-{
-accu*=-1;
-}
-else accu*=1;
-do
-{
-if(pow(a,x)-b==0) break;
-else x+=accu;
-}while(fabs(pow(a,x)-b)<=0.0001);/*Notice that if the accuracy is re-written,the '0.0001' here
- should be changed too! The value should be equal to the accuracy measure!*/ 
-return x;
+	double x=0;
+	double accu=0.0001;//The accuracy can be re-written right here.
+	double nextx;
+	nextx=x+accu;
+	if (pow(a,x)>b&&pow(a,nextx)>pow(a,x))
+	{
+		accu*=-1;
+	}
+	else accu*=1;
+	do
+	{
+		if(pow(a,x)-b==0) break;
+		else x+=accu;
+	}while(fabs(pow(a,x)-b)<=0.0001);/*Notice that if the accuracy is re-written,the '0.0001' here
+	 should be changed too! The value should be equal to the accuracy measure!*/ 
+	return x;
 }
 /* Here I offered an additional function that calculates log(a)(b),
 In case if you require for it.*/
